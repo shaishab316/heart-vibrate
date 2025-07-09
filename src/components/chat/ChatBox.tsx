@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IconArrowNarrowLeft, IconBrandTelegram } from '@tabler/icons-react';
-import { useState, useEffect, useRef } from 'react';
-import ChatMessage from './ChatMessage';
-import { MovingBorder } from '../ui/MovingBorder';
-import { useMessageRetrieveQuery } from '@/redux/features/message/messageSlice';
-import { useSocket } from '@/provider/SocketProvider';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useChatRetrieveQuery } from '@/redux/features/chat/chatApi';
-import Img from '@/components/ui/Img';
-import { useAppSelector } from '@/redux/hooks';
-import GroupSetting from './GroupSetting';
-import VoiceRecorder from './VoiceRecorder';
-import MediaCaptureComponent from './MediaCaptureComponent';
-import { toast } from 'sonner';
+import { IconArrowNarrowLeft, IconBrandTelegram } from "@tabler/icons-react";
+import { useState, useEffect, useRef } from "react";
+import ChatMessage from "./ChatMessage";
+import { MovingBorder } from "../ui/MovingBorder";
+import { useMessageRetrieveQuery } from "@/redux/features/message/messageSlice";
+import { useSocket } from "@/provider/SocketProvider";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useChatRetrieveQuery } from "@/redux/features/chat/chatApi";
+import Img from "@/components/ui/Img";
+import { useAppSelector } from "@/redux/hooks";
+import GroupSetting from "./GroupSetting";
+import VoiceRecorder from "./VoiceRecorder";
+import MediaCaptureComponent from "./MediaCaptureComponent";
+import { toast } from "sonner";
 
 type TMessage = {
 	sender: string;
@@ -27,7 +27,7 @@ const ChatBox = () => {
 	const params = useParams();
 	const { socket } = useSocket();
 	const [messages, setMessages] = useState<TMessage[]>([]);
-	const [newMessage, setNewMessage] = useState('');
+	const [newMessage, setNewMessage] = useState("");
 	const sendBtnRef = useRef<HTMLButtonElement>(null);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
@@ -78,7 +78,7 @@ const ChatBox = () => {
 
 				reader.onload = () => {
 					if (reader.result) {
-						socket!.emit('sendMessage', {
+						socket!.emit("sendMessage", {
 							content: reader.result,
 							type,
 							roomId: params.chatId,
@@ -107,7 +107,7 @@ const ChatBox = () => {
 
 				reader.onerror = (error) => {
 					toast.dismiss(toastId);
-					toast.error('Error reading file');
+					toast.error("Error reading file");
 					reject(error);
 				};
 
@@ -117,11 +117,11 @@ const ChatBox = () => {
 			// Handle socket errors
 			const errorHandler = (error: any) => {
 				toast.dismiss(toastId);
-				toast.error('Error sending file');
+				toast.error("Error sending file");
 				reject(error);
 			};
 
-			socket?.once('error', errorHandler);
+			socket?.once("error", errorHandler);
 
 			// Start sending chunks
 			readNextChunk();
@@ -133,12 +133,12 @@ const ChatBox = () => {
 		if (!socket) return;
 
 		setTimeout(() => {
-			console.log('🔄 Subscribing to chat...');
-			socket.emit('subscribeToChat', params.chatId);
+			console.log("🔄 Subscribing to chat...");
+			socket.emit("subscribeToChat", params.chatId);
 		}, 1000);
 
 		socket.on(
-			'chatMessageReceived',
+			"chatMessageReceived",
 			({ sender, content, type, date, _id, chatId }) => {
 				if (chatId === params.chatId)
 					setMessages((preMessage) => [
@@ -148,101 +148,90 @@ const ChatBox = () => {
 			}
 		);
 
-		socket.on('messageDeleted', ({ messageId, roomId }) => {
+		socket.on("messageDeleted", ({ messageId, roomId }) => {
 			if (roomId === params.chatId)
 				setMessages((preMessage) =>
 					preMessage.filter((message) => message._id !== messageId)
 				);
 		});
 
-		socket.on('chatUpdated', refetch);
+		socket.on("chatUpdated", refetch);
 
 		return () => {
-			socket.off('chatMessageReceived');
-			socket.off('chatUpdated');
+			socket.off("chatMessageReceived");
+			socket.off("chatUpdated");
 		};
 	}, [socket, params.chatId, refetch]);
 
 	useEffect(() => {
 		setTimeout(() => {
-			messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+			messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 		}, 100);
 	}, [messages]);
 
 	useEffect(() => {
 		/** Redirect to inbox if room not found */
 		if (isError)
-			if (
-				(error as any)?.status === 404 ||
-				(error as any)?.status === 401
-			)
-				navigate('/chat', { replace: true });
+			if ((error as any)?.status === 404 || (error as any)?.status === 401)
+				navigate("/chat", { replace: true });
 	}, [error, navigate, isError]);
 
 	const handleSendMessage = async () => {
 		if (newMessage.trim()) {
-			socket!.emit('sendMessage', {
+			socket!.emit("sendMessage", {
 				content: newMessage,
-				type: 'text',
+				type: "text",
 				roomId: params.chatId,
 			});
 
-			setNewMessage('');
+			setNewMessage("");
 		}
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === 'Enter') {
+		if (e.key === "Enter") {
 			e.preventDefault();
-			sendBtnRef.current?.classList.add('animate-click');
+			sendBtnRef.current?.classList.add("animate-click");
 			sendBtnRef.current?.focus();
 			sendBtnRef.current?.click();
 
 			setTimeout(() => {
 				(e.target as HTMLInputElement).focus();
-				sendBtnRef.current?.classList.remove('animate-click');
+				sendBtnRef.current?.classList.remove("animate-click");
 			}, 500);
 		}
 	};
 
 	return (
-		<div className="flex flex-col h-full w-full bg-white dark:bg-gray-800 rounded-l-lg">
-			<div className="border-b px-4 h-12 w-full flex items-center justify-between">
-				<div className="flex items-center gap-2">
-					<Link
-						to="/chat"
-						className="hover:-translate-x-1 block transition"
-					>
-						<IconArrowNarrowLeft className="text-blue-400" />
+		<div className='flex flex-col h-full w-full bg-white dark:bg-gray-800 rounded-l-lg'>
+			<div className='border-b px-4 h-12 w-full flex items-center justify-between'>
+				<div className='flex items-center gap-2'>
+					<Link to='/chat' className='hover:-translate-x-1 block transition'>
+						<IconArrowNarrowLeft className='text-blue-400' />
 					</Link>
 					<Img
 						src={chatData?.data?.image}
-						className="w-8 h-8 rounded-md bg-white border"
-						alt=""
+						className='w-8 h-8 rounded-md bg-white border'
+						alt=''
 					/>
-					<h3 translate="no">{chatData?.data?.name}</h3>
+					<h3 translate='no'>{chatData?.data?.name}</h3>
 				</div>
 				{chatData?.data?.isGroup &&
-					chatData?.data?.admins.some(
-						(admin: any) => admin._id === userId
-					) && <GroupSetting />}
+					chatData?.data?.admins.some((admin: any) => admin._id === userId) && (
+						<GroupSetting />
+					)}
 			</div>
-			<div className="flex-1 p-4 overflow-y-auto">
+			<div className='flex-1 p-4 overflow-y-auto'>
 				{isLoading ? (
 					<p>Loading messages...</p>
 				) : error ? (
-					<p className="text-red-500">
-						{(error as any)?.data?.message ??
-							'Failed to load messages.'}
+					<p className='text-red-500'>
+						{(error as any)?.data?.message ?? "Failed to load messages."}
 					</p>
 				) : (
 					messages.map((message) => {
-						if (
-							!message.readBy
-								.map((user: any) => user._id)
-								.includes(userId)
-						) {
-							socket!.emit('markAllMessagesAsRead', {
+						if (!message.readBy.map((user: any) => user._id).includes(userId)) {
+							socket!.emit("markAllMessagesAsRead", {
 								chatId: params.chatId,
 							});
 						}
@@ -260,11 +249,11 @@ const ChatBox = () => {
 
 				<div ref={messagesEndRef} />
 			</div>
-			<div className="p-4 border-t border-gray-200 dark:border-gray-700">
-				<div className="flex items-center space-x-2">
+			<div className='p-4 border-t border-gray-200 dark:border-gray-700'>
+				<div className='flex items-center space-x-2'>
 					<VoiceRecorder
 						onSend={(blob) => {
-							sendFiles(blob, 'audio');
+							sendFiles(blob, "audio");
 						}}
 					/>
 					<MediaCaptureComponent
@@ -272,12 +261,12 @@ const ChatBox = () => {
 							sendFiles(blob, type);
 						}}
 					/>
-					<MovingBorder className="w-full">
+					<MovingBorder className='w-full'>
 						<input
 							autoFocus
-							type="text"
-							className="w-full p-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-							placeholder="Type your message..."
+							type='text'
+							className='w-full p-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-white'
+							placeholder='Type your message...'
 							value={newMessage}
 							onChange={(e) => setNewMessage(e.target.value)}
 							onKeyDown={handleKeyDown}
@@ -285,12 +274,12 @@ const ChatBox = () => {
 					</MovingBorder>
 					<MovingBorder>
 						<button
-							className="flex items-center gap-1 group bg-sky-400 border-sky-500 text-white"
+							className='flex items-center gap-1 group bg-blue-500 border-blue-500 text-white'
 							ref={sendBtnRef}
 							onClick={handleSendMessage}
 						>
-							Send{' '}
-							<IconBrandTelegram className="group-hover:translate-x-1 transition" />
+							Send{" "}
+							<IconBrandTelegram className='group-hover:translate-x-1 transition' />
 						</button>
 					</MovingBorder>
 				</div>
