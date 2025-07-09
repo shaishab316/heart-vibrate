@@ -43,10 +43,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 	// Handle click outside to close the menu
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				menuRef.current &&
-				!menuRef.current.contains(event.target as Node)
-			) {
+			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
 				setShowMenu(false);
 			}
 		};
@@ -107,9 +104,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 				if (done) break;
 				chunks.push(value);
 				receivedLength += value.length;
-				const progress = Math.floor(
-					(receivedLength / totalLength) * 100
-				);
+				const progress = Math.floor((receivedLength / totalLength) * 100);
 				toast.message(`${type} downloading... ${progress}%`, {
 					id: toastId,
 				});
@@ -147,21 +142,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 			{!isCurrentUser && (
 				<Img
 					src={message.sender.avatar}
-					alt="avatar"
-					className="h-10 w-10 rounded-full mr-2"
+					alt='avatar'
+					className='h-10 w-10 rounded-full mr-2'
 				/>
 			)}
 
-			<div className="relative max-w-xs">
-				<div className="flex flex-col group">
+			<div className='relative max-w-xs'>
+				<div className='flex flex-col group'>
 					{!isCurrentUser && (
-						<div className="flex items-center justify-between gap-2">
-							<span
-								translate="no"
-								className="font-medium"
-							>
-								{message.sender.name.firstName}{' '}
-								{message.sender.name.lastName}
+						<div className='flex items-center justify-between gap-2'>
+							<span translate='no' className='font-medium'>
+								{message.sender.name.firstName} {message.sender.name.lastName}
 							</span>
 						</div>
 					)}
@@ -178,30 +169,16 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 						</span>
 					)}
 					{message.type === 'audio' && (
-						<audio
-							className="mt-2"
-							src={url(message.content)}
-							controls
-						/>
+						<audio className='mt-2' src={url(message.content)} controls />
 					)}
 					{message.type === 'image' && (
-						<img
-							className="mt-2"
-							src={url(message.content)}
-						/>
+						<img className='mt-2' src={url(message.content)} />
 					)}
 					{message.type === 'video' && (
-						<video
-							className="mt-2"
-							src={url(message.content)}
-							controls
-						/>
+						<video className='mt-2' src={url(message.content)} controls />
 					)}
 					{message.date && (
-						<span
-							translate="yes"
-							className="hidden group-hover:inline-block"
-						>
+						<span translate='yes' className='hidden group-hover:inline-block'>
 							{timeAgo(message.date)}
 						</span>
 					)}
@@ -211,8 +188,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 				{showMenu && (
 					<div
 						ref={menuRef}
-						translate="yes"
-						className="absolute whitespace-nowrap w-fit bg-white dark:bg-gray-700 shadow-lg rounded-lg z-50"
+						translate='yes'
+						className='absolute whitespace-nowrap w-fit bg-white dark:bg-gray-700 shadow-lg rounded-lg z-50'
 						style={{
 							top: `${menuPosition.y}px`,
 							left: `${menuPosition.x}px`,
@@ -220,13 +197,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 						}}
 					>
 						{!isCurrentUser ? (
-							<button className="flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click">
+							<button className='flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click bg-white'>
 								<IconHeart /> Like
 							</button>
 						) : (
 							<button
 								onClick={handleDelete}
-								className="flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click"
+								className='flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click bg-white'
 							>
 								<IconTrash /> Delete
 							</button>
@@ -234,30 +211,28 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 						{message.type !== 'text' ? (
 							<button
 								onClick={handleDownload}
-								className="flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+								className='flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 bg-white'
 							>
 								<IconDownload /> Download
 							</button>
 						) : (
 							<>
 								{isCurrentUser && (
-									<button className="flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click">
+									<button className='flex items-center px-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click bg-white'>
 										<IconEdit /> Edit
 									</button>
 								)}
 								<button
 									onClick={() => setTranslate(!translate)}
-									className="flex items-center pl-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click"
+									className='flex items-center pl-2 gap-2 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-none active:animate-click bg-white'
 								>
 									{!translate ? (
 										<>
-											<IconLanguage />{' '}
-											<span>Translate</span>
+											<IconLanguage /> <span>Translate</span>
 										</>
 									) : (
 										<>
-											<IconLanguageOff />{' '}
-											<span>Original Text</span>
+											<IconLanguageOff /> <span>Original Text</span>
 										</>
 									)}
 								</button>
